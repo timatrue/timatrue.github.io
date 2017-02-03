@@ -1,68 +1,105 @@
-body {
+body{
     margin: 60px auto;
-    width: 70%;
+    width: 60%;
 }
-nav ul, footer ul {
+nav ul li, footer ul li{
+    display: inline-block;
+}
+nav {
+    display: inline-block;
+}
+nav ul , footer ul{
     font-family:'Inconsolata','Helvetica', 'Arial', 'Sans-Serif';
     padding: 0px;
     list-style: none;
     font-weight: bold;
 	font-size: 1em;
+	display:inline-block;
 }
-nav ul li, footer ul li {
-    display: inline;
-    margin-right: 20px;
+.header{
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
 }
-a {
+#nav_container{
+	flex: 0 0 auto;
+	flex-wrap: nowrap;
+}
+#canvas_container{
+	display: flex;
+	justify-content: flex-end;
+	flex: 0 1 auto;
+	margin-left: auto;
+	width: 80%;
+	margin-right:0 15px;
+}
+
+.imageAddress{
+	flex-basis:auto;
+	content:url('/heart.png');
+}
+.imageAddress:after{
+	content:url('/heart.png');
+}
+.imageAddress { 
+	transition: all .2s ease-in-out;
+	transform: scale(0.8);	
+}
+.imageAddress:hover { 
+	transform: scale(1); 
+}
+a{
     text-decoration: none;
-    color: #2C3E50;
 	text-decoration: underline;
 }
-a:hover {
-	 color: #2980B9;
+a:visited{
+	color: #2C3E50;
     text-decoration: underline;
 }
+a:hover{
+	color: #2980B9;
+    text-decoration: underline;
+}
+
 .blurb{
 	display: inline-block;
 }
-
-h1, h2, h3 {
+h1, h2, h3{
 	font-family: 'Inconsolata','Helvetica', 'Arial', 'Sans-Serif';
 	margin: .37em 0;
 	color: #2C3E50;
 }
-
-h1 {
-    font-size: 1.4em;
-}
-h2 {
-    font-size: 1.2em;
-}
-h3 {
-    font-size: 1em;
-}
-
-ul li {
-	margin: .37em 0;
+ul,li,p{
 	font-family:'Inconsolata','Helvetica', 'Arial', 'Sans-Serif';
 }
-p {
+h1{
+    font-size: 1.4em;
+}
+h2{
+    font-size: 1.2em;
+}
+h3{
+    font-size: 1em;
+}
+div.blurb ul li{
+	margin: .37em 0;
+}
+p{
     font-size: 1em;
     line-height: 1em;
     color: #333;
-	font-family:'Inconsolata','Helvetica', 'Arial', 'Sans-Serif';
 	margin: .57em 1.4em;
 }
-footer {
+footer{
     border-top: 1px solid #d5d5d5;
     font-size: .8em;
 }
 
-ul.posts { 
+ul.posts{ 
     margin: 20px auto 40px; 
     font-size: 1.5em;
 }
 
-ul.posts li {
+ul.posts li{
     list-style: none;
 }

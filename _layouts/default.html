@@ -4,25 +4,99 @@
 			<title>{{ page.title }}</title>
 			<!-- link to main stylesheet -->
 			<link rel="stylesheet" type="text/css" href="/css/main.css">
-			<link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
-			
+			<link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">			
 			<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon.png">
 			<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
 			<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
 		</head>
 		<body>
-			<nav>
-	    		<ul>
-	        		<li><a href="/">Projects</a></li>
-					<li><a href="/cv">CV</a></li>
-		        	<li><a href="/about">About</a></li>
-	    		</ul>
-			</nav>
+		<div class="header">
+			<div id="nav_container">
+				<nav >
+					<ul>
+						<li><a href="/">Projects</a></li>
+						<li><a href="/cv">CV</a></li>
+						<li><a href="/about">About</a></li>
+					</ul>
+				</nav>
+			</div>
+			<div id="canvas_container">
+				<canvas id="canvas" height="30" width="60"></canvas>
+			</div>
+			<div class="imageAddress" title="My current location: Lausanne, Switzerland">
+			</div>​
+
+
+		</div>
 			<div class="container">
 			
 			{{ content }}
 			
 			</div><!-- /.container -->
+			<script>
+			
+			var canvas = document.querySelector('canvas');
+			var divParent = document.getElementById('canvas_container');
+			var timer = 0;
+			var stepX = 3;
+			var stepUpY = 15;
+			var stepDownY = 20;
+			var myReq;
+			
+			canvas.width = divParent.clientWidth*0.7;
+			window.addEventListener("resize", resizeCanvas, false);
+			
+			function resizeCanvas(event){
+				canvas.width = divParent.clientWidth*0.7;
+				init();
+			}
+			function init(){
+				var ctx = canvas.getContext("2d");
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				ctx.strokeStyle = '#E74C3C';
+				ctx.lineCap="round";
+				timer = 0;
+				cancelAnimationFrame(myReq);
+				myReq = requestAnimationFrame(line);	
+			}
+			function line(){
+				var ctx = canvas.getContext("2d");
+				var height =  canvas.height/2;
+				var random = getRandom()*getRandomSign()*2;
+				ctx.beginPath();
+				ctx.moveTo(timer,height);
+				
+				if(heartRate()){
+					timer += stepX; 
+					height -= (stepUpY + random);
+					ctx.lineTo(timer, height);
+					
+					timer += stepX;
+					height += (stepDownY + random);
+					ctx.lineTo(timer, height);
+					
+					timer += stepX;
+					height = canvas.height/2;
+					ctx.lineTo(timer, height);
+				} else { 
+					timer += stepX;				
+					ctx.lineTo(timer, height);
+				}
+				ctx.stroke();
+				myReq = requestAnimationFrame(line);
+			}
+			function heartRate() {
+				return heartBeat = (getRandom() < 0.08) ? true : false;
+			}
+			function getRandom() {
+				return Math.random();
+			}
+			function getRandomSign(){
+				return sign = Math.round(Math.random()) * 2 - 1;
+			}
+			init();
+
+			</script>
 			<footer>
 	    		<ul>
 	        		<li><a href="mailto:trushinskiy.a@gmail.com">email</a></li>
