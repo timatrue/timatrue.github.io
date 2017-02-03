@@ -15,7 +15,7 @@
 				<nav >
 					<ul>
 						<li><a href="/">Projects</a></li>
-						<li><a href="/cv">CV</a></li>
+						<li><a href="/resume">Resume</a></li>
 						<li><a href="/about">About</a></li>
 					</ul>
 				</nav>
@@ -44,7 +44,11 @@
 			var myReq;
 			
 			canvas.width = divParent.clientWidth*0.7;
-			window.addEventListener("resize", resizeCanvas, false);
+			window.addEventListener('load', function load(event){
+				window.removeEventListener('load', load, false);
+				init();
+			});
+			window.addEventListener('resize', resizeCanvas, false);
 			
 			function resizeCanvas(event){
 				canvas.width = divParent.clientWidth*0.7;
@@ -94,7 +98,7 @@
 			function getRandomSign(){
 				return sign = Math.round(Math.random()) * 2 - 1;
 			}
-			init();
+			
 
 			</script>
 			<footer>
