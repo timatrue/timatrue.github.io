@@ -23,7 +23,7 @@
 			<div id="canvas_container">
 				<canvas id="canvas" height="30" width="60"></canvas>
 			</div>
-			<div class="imageAddress" title="My current location: Lausanne, Switzerland">
+			<div id="imageAddress" title="My current location: Lausanne, Switzerland">
 			</div>​
 
 
@@ -37,60 +37,86 @@
 			
 			var canvas = document.querySelector('canvas');
 			var divParent = document.getElementById('canvas_container');
-			var timer = 0;
-			var stepX = 3;
-			var stepUpY = 15;
-			var stepDownY = 20;
+			var scaleFactor = 0.7;
+			canvas.width = divParent.clientWidth*scaleFactor;
+			var ctx = canvas.getContext("2d");
 			var myReq;
 			
-			canvas.width = divParent.clientWidth*0.7;
+			var settingsCanvas = new SettingsLineCanvas(0, 3);
+			var lineCanvas = new LineCanvas(3, '#E74C3C');
+			var zigZagCanvas = new ZigZagCanvas(3, 15, 20, '#E74C3C');
+			
 			window.addEventListener('load', function load(event){
 				window.removeEventListener('load', load, false);
-				init();
+				initCanvas();
 			});
-			window.addEventListener('resize', resizeCanvas, false);
-			
-			function resizeCanvas(event){
-				canvas.width = divParent.clientWidth*0.7;
-				init();
+			window.addEventListener('resize', resize, false);
+			function resize(event){
+				initCanvas();
 			}
-			function init(){
-				var ctx = canvas.getContext("2d");
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				ctx.strokeStyle = '#E74C3C';
-				ctx.lineCap="round";
-				timer = 0;
-				cancelAnimationFrame(myReq);
-				myReq = requestAnimationFrame(line);	
+			function SettingsLineCanvas(distance, stepX){
+				this.distance = distance;								
+				this.height = canvas.height/2;
 			}
-			function line(){
-				var ctx = canvas.getContext("2d");
-				var height =  canvas.height/2;
-				var random = getRandom()*getRandomSign()*2;
-				ctx.beginPath();
-				ctx.moveTo(timer,height);
-				
-				if(heartRate()){
-					timer += stepX; 
-					height -= (stepUpY + random);
-					ctx.lineTo(timer, height);
-					
-					timer += stepX;
-					height += (stepDownY + random);
-					ctx.lineTo(timer, height);
-					
-					timer += stepX;
-					height = canvas.height/2;
-					ctx.lineTo(timer, height);
-				} else { 
-					timer += stepX;				
-					ctx.lineTo(timer, height);
+			function LineCanvas(stepX, color){
+				this.stepX = stepX;
+				this.color = color;
+				this.draw = function() {
+					ctx.beginPath();
+					ctx.strokeStyle = this.color;
+					ctx.moveTo(settingsCanvas.distance, settingsCanvas.height); 
+					settingsCanvas.distance += this.stepX;
+					ctx.lineTo(settingsCanvas.distance, settingsCanvas.height);
+					ctx.stroke();
 				}
-				ctx.stroke();
-				myReq = requestAnimationFrame(line);
+			}			
+			function ZigZagCanvas(stepX, stepUpY, stepDownY, color ){
+				this.stepX = stepX;
+				this.stepUpY = stepUpY;
+				this.stepDownY = stepDownY;
+				this.color = color;
+				this.draw = function() {
+					var _random = getRandom()*getRandomSign();
+					var _distance = settingsCanvas.distance;
+					var _height = settingsCanvas.height + _random;
+					ctx.strokeStyle = this.color;
+					ctx.beginPath();
+					ctx.moveTo(_distance, _height);
+					
+					//move up
+					_distance += this.stepX;
+					_height -= this.stepUpY;
+					ctx.lineTo(_distance, _height);
+					
+					//move down
+					_distance += this.stepX;
+					_height += this.stepDownY;
+					ctx.lineTo(_distance, _height);	
+					
+					//move up	
+					_distance += this.stepX;
+					ctx.lineTo(_distance, settingsCanvas.height);
+					
+					settingsCanvas.distance = _distance;
+					ctx.stroke();
+				}
 			}
-			function heartRate() {
-				return heartBeat = (getRandom() < 0.08) ? true : false;
+
+			function initCanvas(){
+				canvas.width = divParent.clientWidth*scaleFactor;
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				settingsCanvas.distance = 0;
+				cancelAnimationFrame(myReq);
+				myReq = requestAnimationFrame(drawHeartBeat);	
+			}
+			function drawHeartBeat(){
+				if(heartBeat()) zigZagCanvas.draw();				
+				else lineCanvas.draw();
+				if(settingsCanvas.distance < canvas.width) myReq = requestAnimationFrame(drawHeartBeat);
+				else cancelAnimationFrame(myReq);
+			}
+			function heartBeat() {
+				return beat = (getRandom() < 0.08) ? true : false;
 			}
 			function getRandom() {
 				return Math.random();
@@ -99,7 +125,6 @@
 				return sign = Math.round(Math.random()) * 2 - 1;
 			}
 			
-
 			</script>
 			<footer>
 	    		<ul>
