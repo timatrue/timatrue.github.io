@@ -53,7 +53,8 @@ nav ul , footer ul{
 	transform: scale(0.8);	
 }
 #imageAddress:hover { 
-	transform: scale(1); 
+	transform: scale(1);
+	
 }
 a{
     text-decoration: none;
