@@ -24,6 +24,7 @@ nav ul , footer ul{
 #nav_container{
 	flex: 0 0 auto;
 	flex-wrap: nowrap;
+	padding-right:10px;
 }
 #canvas_container{
 	display: flex;
@@ -34,27 +35,17 @@ nav ul , footer ul{
 	margin-right:0 15px;
 }
 
-#imageAddress{
+#imageHeart{
 	flex-basis:auto;
-	width:25px;
-	height:25px;
-	background-image:url('/heart.png');
-	background-size:contain;
-	background-repeat:no-repeat;
-	background-position:50% 50%;
-}
-/*
-#imageAddress:after{
 	content:url('/heart.png');
 }
-*/
-#imageAddress { 
+
+#imageHeart { 
 	transition: all .2s ease-in-out;
 	transform: scale(0.8);	
 }
-#imageAddress:hover { 
-	transform: scale(1);
-	
+#imageHeart:hover { 
+	transform: scale(1);	
 }
 a{
     text-decoration: none;
@@ -111,3 +102,16 @@ ul.posts{
 ul.posts li{
     list-style: none;
 }
+/*
+#imageAddress{
+	flex-basis:auto;
+	width:25px;
+	height:25px;
+	background-image:url('/heart.png');
+	background-size:contain;
+	background-repeat:no-repeat;
+	background-position:50% 50%;
+#imageAddress:after{
+	content:url('/heart.png');
+}
+*/

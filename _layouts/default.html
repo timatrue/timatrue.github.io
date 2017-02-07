@@ -9,6 +9,9 @@
 			<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon.png">
 			<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
 			<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+			<!-- Yandex.Metrika counter --> 
+			<script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter42631714 = new Ya.Metrika({ id:42631714, clickmap:true, trackLinks:true, accurateTrackBounce:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/42631714" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+			<!-- /Yandex.Metrika counter -->
 		</head>
 		<body>
 		<div class="header">
@@ -24,7 +27,7 @@
 			<div id="canvas_container">
 				<canvas id="canvas" height="30" width="60"></canvas>
 			</div>
-			<div id="imageAddress" title="My current location: Lausanne, Switzerland">
+			<div id="imageHeart" title="My current location: Lausanne, Switzerland">
 			</div>​
 
 
@@ -37,28 +40,53 @@
 			<script>
 			//canvas variables
 			var canvas = document.querySelector('canvas'), divParent = document.getElementById('canvas_container'),
-				styleSheetHeart = document.styleSheets[1], myReq;
-			var ctx = canvas.getContext("2d"); 
-			var scaleFactor = 0.7;
-			canvas.width = divParent.clientWidth*scaleFactor;
+				styleSheetHeart = document.styleSheets[1], myReq, ctx = canvas.getContext("2d"), heartAnimRun = false;
 			
-			//timer variables
-			var fps = 25, interval = 1000/fps, lastTime = (new Date()).getTime(),
-				currentTime = 0, delta = 0, timerRunning = false;
-			
-			var settingsCanvas = new SettingsLineCanvas(0, 3);
-			var lineCanvas = new LineCanvas(3, '#E74C3C');
-			var zigZagCanvas = new ZigZagCanvas(3, 15, 20, '#E74C3C');
+			//Setup canvas animation
+			var setup = {
+				scaleFactor : 0.7,
+				distance : 0,
+				color : '#E74C3C',
+				stepX : 3,
+				stepUpY : 15,
+				stepDownY : 20
+			}
+			//Setup FPS
+			var fpsSetup = {
+				fps : 25,
+				ms : 1000,
+				get interval(){ 
+					return this.ms/this.fps;
+				}
+			}
+			var timerSetup = {
+				lastTime : (new Date()).getTime(),
+				currentTime : 0,
+				get delta() {
+					this.currentTime = (new Date()).getTime();
+					return this.currentTime - this.lastTime;
+					}
+			}
+			//Setup heart animation
+			var heartSetup = {
+				randomBeat : 0.07,
+				minRunTime : 300
+			}
+			var settingsCanvas = new SettingsLineCanvas(setup.distance, setup.stepX);
+			var lineCanvas = new LineCanvas(setup.stepX, setup.color);
+			var zigZagCanvas = new ZigZagCanvas(setup.stepX, setup.stepUpY, setup.stepDownY, setup.color);
+			canvas.width = canvasWidth();
 			
 			window.addEventListener('load', function load(event){
 				window.removeEventListener('load', load, false);
 				initCanvas();
 			});
 			window.addEventListener('resize', resize, false);
+			
 			function resize(event){
 				initCanvas();
 			}
-			function SettingsLineCanvas(distance, stepX){
+			function SettingsLineCanvas(distance){
 				this.distance = distance;								
 				this.height = canvas.height/2;
 			}
@@ -107,27 +135,17 @@
 					
 				}
 			}
-
 			function initCanvas(){
-				canvas.width = divParent.clientWidth*scaleFactor;
+				canvas.width = canvasWidth();
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				settingsCanvas.distance = 0;
 				cancelAnimationFrame(myReq);
+				heartAnimationInfinite(false);
 				myReq = requestAnimationFrame(drawHeartBeat);	
 			}
-
 			function drawHeartBeat(){
-
-				if(settingsCanvas.distance > canvas.width) settingsCanvas.distance = 0;
-				myReq = requestAnimationFrame(drawHeartBeat);
 				
-				currentTime = (new Date()).getTime();
-				delta = currentTime - lastTime;
-				
-				if(delta > interval){
-
-					ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-					ctx.fillRect(0, 0, canvas.width, canvas.height);
+				if(timerSetup.delta > fpsSetup.interval ){
 				
 					if(heartBeat()) {
 						zigZagCanvas.draw();
@@ -135,25 +153,29 @@
 					else {
 						lineCanvas.draw();
 					}
-					lastTime = currentTime - (delta % interval);
-				}	
-			}
-								
+					timerSetup.lastTime = timerSetup.currentTime - (timerSetup.delta % fpsSetup.interval);
+				}
+				if(settingsCanvas.distance > canvas.width) {
+					cancelAnimationFrame(myReq);
+					heartAnimationInfinite(true);
+				}
+				else myReq = requestAnimationFrame(drawHeartBeat);				
+			}				
 			function heartBeat() {
-				var beat = (getRandom() < 0.08) ? checkTimerHeart() : false;
+				var beat = (getRandom() < heartSetup.randomBeat) ? checkTimerHeart() : false;
 				return beat;
 			}
 			function checkTimerHeart(){
-				if(timerRunning != true){
+				if(heartAnimRun != true){
 					heartAnimation(true);
-					timerRunning = true;
-					setTimeout(timerEvent,300);
+					heartAnimRun = true;
+					setTimeout(timerEvent,heartSetup.minRunTime);
 					return true;
 				}
 				return false;
 			}
 			function timerEvent(){ 
-				timerRunning = false;
+				heartAnimRun = false;
 				heartAnimation(false);
 			}
 			function getRandom() {
@@ -163,11 +185,17 @@
 				return sign = Math.round(Math.random()) * 2 - 1;
 			}
 			function heartAnimation(bool){
-				if(bool) styleSheetHeart.insertRule('#imageAddress { animation: beat 0.2s ease alternate;}',0);
+				if(bool) styleSheetHeart.insertRule('#imageHeart { animation: beat 0.2s ease alternate;}',0);
 				else styleSheetHeart.deleteRule(0);
 			}
-		
-			
+			function heartAnimationInfinite(bool){
+				var heartImage = document.querySelector('#imageHeart');
+				if(bool) heartImage.classList.add("imageHeart");
+				else heartImage.classList.remove("imageHeart");
+			}
+			function canvasWidth(){
+				return divParent.clientWidth * setup.scaleFactor;
+			}
 			</script>
 			<footer>
 	    		<ul>
@@ -176,4 +204,4 @@
 				</ul>
 			</footer>
 		</body>
-	</html>
+	</html> 

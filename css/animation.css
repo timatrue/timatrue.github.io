@@ -1,1 +1,10 @@
-@keyframes beat{to { transform: scale(1); }};
+@keyframes beat {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1); }
+  100% { transform: scale(0.8); }
+}
+
+.imageHeart {
+	animation: beat 0.5s ease infinite;
+}
+
