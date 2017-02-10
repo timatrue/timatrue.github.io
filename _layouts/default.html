@@ -3,12 +3,13 @@
 		<head>
 			<title>{{ page.title }}</title>
 			<!-- link to main stylesheet -->
-			<link rel="stylesheet" type="text/css" href="/css/main.css">
-			<link rel="stylesheet" type="text/css" href="/css/animation.css">
+			<link rel="stylesheet" type="text/css" href="/public/css/main.css">
+			<link rel="stylesheet" type="text/css" href="/public/css/animation.css">
 			<link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">			
 			<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon.png">
 			<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
 			<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+			<meta name="viewport" content="width=device-width, initial-scale=1">
 			<!-- Yandex.Metrika counter --> 
 			<script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter42631714 = new Ya.Metrika({ id:42631714, clickmap:true, trackLinks:true, accurateTrackBounce:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/42631714" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 			<!-- /Yandex.Metrika counter -->
@@ -29,174 +30,12 @@
 			</div>
 			<div id="imageHeart" title="My current location: Lausanne, Switzerland">
 			</div>​
-
-
 		</div>
+		<script type="text/javascript" src="/public/js/animation.js"></script>
 			<div class="container">
-			
 			{{ content }}
-			
+
 			</div><!-- /.container -->
-			<script>
-			//canvas variables
-			var canvas = document.querySelector('canvas'), divParent = document.getElementById('canvas_container'),
-				styleSheetHeart = document.styleSheets[1], myReq, ctx = canvas.getContext("2d"), heartAnimRun = false;
-			
-			//Setup canvas animation
-			var setup = {
-				scaleFactor : 0.7,
-				distance : 0,
-				color : '#E74C3C',
-				stepX : 3,
-				stepUpY : 15,
-				stepDownY : 20
-			}
-			//Setup FPS
-			var fpsSetup = {
-				fps : 25,
-				ms : 1000,
-				get interval(){ 
-					return this.ms/this.fps;
-				}
-			}
-			var timerSetup = {
-				lastTime : (new Date()).getTime(),
-				currentTime : 0,
-				get delta() {
-					this.currentTime = (new Date()).getTime();
-					return this.currentTime - this.lastTime;
-					}
-			}
-			//Setup heart animation
-			var heartSetup = {
-				randomBeat : 0.07,
-				minRunTime : 300
-			}
-			var settingsCanvas = new SettingsLineCanvas(setup.distance, setup.stepX);
-			var lineCanvas = new LineCanvas(setup.stepX, setup.color);
-			var zigZagCanvas = new ZigZagCanvas(setup.stepX, setup.stepUpY, setup.stepDownY, setup.color);
-			canvas.width = canvasWidth();
-			
-			window.addEventListener('load', function load(event){
-				window.removeEventListener('load', load, false);
-				initCanvas();
-			});
-			window.addEventListener('resize', resize, false);
-			
-			function resize(event){
-				initCanvas();
-			}
-			function SettingsLineCanvas(distance){
-				this.distance = distance;								
-				this.height = canvas.height/2;
-			}
-			function LineCanvas(stepX, color){
-				this.stepX = stepX;
-				this.color = color;
-				this.draw = function() {
-					ctx.beginPath();
-					ctx.strokeStyle = this.color;
-					ctx.moveTo(settingsCanvas.distance, settingsCanvas.height); 
-					settingsCanvas.distance += this.stepX;
-					ctx.lineTo(settingsCanvas.distance, settingsCanvas.height);
-					ctx.stroke();
-					
-				}
-			}			
-			function ZigZagCanvas(stepX, stepUpY, stepDownY, color ){
-				this.stepX = stepX;
-				this.stepUpY = stepUpY;
-				this.stepDownY = stepDownY;
-				this.color = color;
-				this.draw = function() {
-					var _random = getRandom()*getRandomSign();
-					var _distance = settingsCanvas.distance;
-					var _height = settingsCanvas.height + _random;
-					ctx.strokeStyle = this.color;
-					ctx.beginPath();
-					ctx.moveTo(_distance, _height);
-					
-					//move up
-					_distance += this.stepX;
-					_height -= this.stepUpY;
-					ctx.lineTo(_distance, _height);
-					
-					//move down
-					_distance += this.stepX;
-					_height += this.stepDownY;
-					ctx.lineTo(_distance, _height);	
-					
-					//move up	
-					_distance += this.stepX;
-					ctx.lineTo(_distance, settingsCanvas.height);
-					
-					settingsCanvas.distance = _distance;
-					ctx.stroke();
-					
-				}
-			}
-			function initCanvas(){
-				canvas.width = canvasWidth();
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				settingsCanvas.distance = 0;
-				cancelAnimationFrame(myReq);
-				heartAnimationInfinite(false);
-				myReq = requestAnimationFrame(drawHeartBeat);	
-			}
-			function drawHeartBeat(){
-				
-				if(timerSetup.delta > fpsSetup.interval ){
-				
-					if(heartBeat()) {
-						zigZagCanvas.draw();
-					}				
-					else {
-						lineCanvas.draw();
-					}
-					timerSetup.lastTime = timerSetup.currentTime - (timerSetup.delta % fpsSetup.interval);
-				}
-				if(settingsCanvas.distance > canvas.width) {
-					cancelAnimationFrame(myReq);
-					heartAnimationInfinite(true);
-				}
-				else myReq = requestAnimationFrame(drawHeartBeat);				
-			}				
-			function heartBeat() {
-				var beat = (getRandom() < heartSetup.randomBeat) ? checkTimerHeart() : false;
-				return beat;
-			}
-			function checkTimerHeart(){
-				if(heartAnimRun != true){
-					heartAnimation(true);
-					heartAnimRun = true;
-					setTimeout(timerEvent,heartSetup.minRunTime);
-					return true;
-				}
-				return false;
-			}
-			function timerEvent(){ 
-				heartAnimRun = false;
-				heartAnimation(false);
-			}
-			function getRandom() {
-				return Math.random();
-			}
-			function getRandomSign(){
-				return sign = Math.round(Math.random()) * 2 - 1;
-			}
-			function heartAnimation(bool){
-				if(bool) styleSheetHeart.insertRule('#imageHeart { animation: beat 0.2s ease alternate;}',0);
-				else styleSheetHeart.deleteRule(0);
-			}
-			function heartAnimationInfinite(bool){
-				var heartImage = document.querySelector('#imageHeart');
-				if(bool) heartImage.classList.add("imageHeart");
-				else heartImage.classList.remove("imageHeart");
-			}
-			function canvasWidth(){
-				return divParent.clientWidth * setup.scaleFactor;
-			}
-			</script>
 			<footer>
 	    		<ul>
 	        		<li><a href="mailto:trushinskiy.a@gmail.com">email</a></li>

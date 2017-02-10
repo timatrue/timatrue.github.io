@@ -1,7 +1,24 @@
 body{
-    margin: 60px auto;
+    margin: 30px auto;
     width: 60%;
 }
+@media only screen
+	and (min-device-width: 320px) 
+	and (max-device-width: 480px)
+{
+	body{
+    margin: 15px auto;
+    width: 90%;
+	}
+	#canvas_container{
+		display: none;
+	}
+	#imageHeart{
+		display: none;
+	}
+	
+}
+
 nav ul li, footer ul li{
     display: inline-block;
 }
@@ -47,6 +64,9 @@ nav ul , footer ul{
 #imageHeart:hover { 
 	transform: scale(1);	
 }
+#imageHeart:after{		
+  	content:url('/heart.png');
+  }
 a{
     text-decoration: none;
 	text-decoration: underline;
@@ -102,6 +122,8 @@ ul.posts{
 ul.posts li{
     list-style: none;
 }
+
+
 /*
 #imageAddress{
 	flex-basis:auto;
